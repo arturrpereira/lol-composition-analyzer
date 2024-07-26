@@ -2,7 +2,9 @@ version: '3'
 
 services:
   app:
-    build: .
+    build: 
+      context: ./auth-service
+      dockerfile: dockerfile
     ports:
       - "5000:5000"
     env_file:

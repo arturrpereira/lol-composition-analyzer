@@ -24,14 +24,17 @@ def verify_access_token(access_token: Optional[str] = Cookie(None)):
 
 
 @router.get("/user/me")
-def read_user_me(token: dict = Depends(verify_access_token), db: Session = Depends(get_connection)):
+def read_user_me(
+    token: dict = Depends(verify_access_token),
+    db: Session = Depends(get_connection),
+):
     username = token.get("sub")
     db_user = db.query(User).filter(User.username == username).first()
-    
+
     data = LogedUser(
         username=db_user.username,
         first_name=db_user.first_name,
         last_name=db_user.last_name,
-        email=db_user.email
+        email=db_user.email,
     )
     return LogedUserResponse(data=data)
