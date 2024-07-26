@@ -8,6 +8,7 @@ from database.models import User
 from schemas.user_schema import CreateUser, CreateUserResponse, LoginRequest
 from utils.security import password_hash, verify_password_hash, generate_access_token
 
+
 router = APIRouter()
 
 
