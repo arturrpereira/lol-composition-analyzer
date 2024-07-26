@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from datetime import timedelta
 from database.db import get_connection
 from database.models import User
-from schemas.user_schema import CreateUser, CreateUserResponse
-from utils.security import password_hash
+from schemas.user_schema import CreateUser, CreateUserResponse, LoginRequest
+from utils.security import password_hash, verify_password_hash, generate_access_token
 
 router = APIRouter()
 
@@ -31,3 +33,28 @@ def add_user(user: CreateUser, db: Session = Depends(get_connection)):
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Email or username already registered!")
+
+
+@router.post("/user/auth")
+def add_user_auth(data: LoginRequest, db: Session = Depends(get_connection)):
+    user = db.query(User).filter(User.username == data.username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    verify_password = verify_password_hash(data.password, user.hashed_password)
+    if not verify_password:
+        raise HTTPException(status_code=401, detail="Incorret password")
+    
+    expires = timedelta(days=1)
+    access_token = generate_access_token({"sub": data.username},expires_delta=expires)
+
+    response = JSONResponse(content={"access_token": access_token.access_token, "token_type": access_token.token_type})
+    response.set_cookie(
+        key="access_token",
+        value=access_token.access_token,
+        httponly=True,
+        secure=False,
+        expires=expires
+    )
+    return response
+
