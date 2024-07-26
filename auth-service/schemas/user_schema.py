@@ -17,3 +17,14 @@ class CreateUserResponse(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+
+class LogedUser(BaseModel):
+    username: str
+    first_name: str
+    last_name: str
+    email: str
+
+
+class LogedUserResponse(BaseModel):
+    data: LogedUser
