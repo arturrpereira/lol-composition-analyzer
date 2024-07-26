@@ -2,11 +2,7 @@ import jwt
 import os
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
-from dotenv import load_dotenv
 from schemas.token_schema import Token
-
-
-load_dotenv()
 
 
 SECRET_KEY = os.getenv("SECRET_KEY")

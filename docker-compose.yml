@@ -7,18 +7,18 @@ services:
       dockerfile: dockerfile
     ports:
       - "5000:5000"
-    env_file:
-      - .env
     depends_on:
       - db
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgresql://admin:password@db:5432/users-db
+      SECRET_KEY: 285ee0ff3eedf0ccfa27830ecab6fdb89c836fcd0aedb0ac3ab63125ed6e89b1
+      ALGORITHM: HS256
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users-db
     ports:
       - "5432:5432"
