@@ -5,7 +5,7 @@ from routes import public, private
 
 app = FastAPI()
 
-app.add_middlware(
+app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_methods=["*"],
