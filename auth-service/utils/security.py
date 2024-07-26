@@ -33,9 +33,9 @@ def generate_access_token(data, expires_delta):
         expires = datetime.now(timezone.utc) + timedelta(minutes=15)
     
     encoded_data.update({"exp": expires})
-    encoded_jwt = jwt.encode(encoded_data, SECRET_KEY, [ALGORITHM])
+    encoded_jwt = jwt.encode(encoded_data, SECRET_KEY, ALGORITHM)
     return Token(access_token=encoded_jwt, token_type="bearer")
 
 
 def decode_access_token(token: str):
-    return jwt.decode(token, SECRET_KEY, [ALGORITHM])
+    return jwt.decode(token, SECRET_KEY,ALGORITHM)
