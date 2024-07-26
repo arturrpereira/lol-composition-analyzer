@@ -13,3 +13,7 @@ class CreateUserResponse(BaseModel):
     message: str
     user: CreateUser
 
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
