@@ -67,3 +67,4 @@ class RabbitMQConnection:
     def close_connection(self):
         if self.connection and not self.connection.is_closed:
             self.connection.close()
+
