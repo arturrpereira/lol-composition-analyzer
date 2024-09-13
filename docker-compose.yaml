@@ -13,6 +13,19 @@ services:
       - RABBITMQ_DEFAULT_PASS=admin
     networks:
       - lol_composition_analyzer
+    
+  find_puuid_service:
+    build:
+      context: .
+      dockerfile: ./src/find_puuid_service/Dockerfile
+    container_name: find_puuid_service
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    command: ["python", "main.py"]
 
 volumes:
   rabbitmq_data:
