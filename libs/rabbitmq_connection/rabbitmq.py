@@ -57,8 +57,7 @@ class RabbitMQConnection:
             raise ConnectionError("Channel is not open. Call connect() first.")
 
         def func_callback(ch, method, properties, body):
-            message = body.decode()
-            callback(message)
+            callback(ch, method, properties, body)
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
         self.channel.basic_consume(queue=queue_name, on_message_callback=func_callback)
