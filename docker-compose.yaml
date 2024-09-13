@@ -13,6 +13,11 @@ services:
       - RABBITMQ_DEFAULT_PASS=admin
     networks:
       - lol_composition_analyzer
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     
   find_puuid_service:
     build:
@@ -20,12 +25,15 @@ services:
       dockerfile: ./src/find_puuid_service/Dockerfile
     container_name: find_puuid_service
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
     command: ["python", "main.py"]
+    networks:
+      - lol_composition_analyzer
 
 volumes:
   rabbitmq_data:
@@ -33,3 +41,4 @@ volumes:
 networks:
   lol_composition_analyzer:
     driver: bridge
+
