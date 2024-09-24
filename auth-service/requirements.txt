@@ -1,0 +1,11 @@
+fastapi[all]
+uvicorn
+pyjwt
+requests
+bcrypt
+sqlalchemy
+passlib[bcrypt]
+psycopg2-binary
+pyjwt
+python-dotenv
+black
