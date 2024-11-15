@@ -13,6 +13,28 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     networks:
       - lol_composition_analyzer
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    
+  find_puuid_service:
+    build:
+      context: .
+      dockerfile: ./src/find_puuid_service/Dockerfile
+    container_name: find_puuid_service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_DEFAULT_HOST}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RIOT_API_KEY=${RIOT_API_KEY}
+    command: ["python", "main.py"]
+    networks:
+      - lol_composition_analyzer
 
 volumes:
   rabbitmq_data:
