@@ -67,3 +67,7 @@ class RabbitMQConnection:
         if self.connection and not self.connection.is_closed:
             self.connection.close()
 
+    def queue_bind(self, exchange, queue, routing_key):
+        self.channel.queue_bind(exchange=exchange, queue=queue, routing_key=routing_key)
+
+        
