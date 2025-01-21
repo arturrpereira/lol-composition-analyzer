@@ -1,4 +1,39 @@
 services:
+  find_puuid_service:
+    build:
+      context: .
+      dockerfile: ./src/find_puuid_service/Dockerfile
+    container_name: find_puuid_service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_DEFAULT_HOST}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RIOT_API_KEY=${RIOT_API_KEY}
+    command: ["python", "main.py"]
+    networks:
+      - lol_composition_analyzer
+  
+  match_info_consumer:
+    build:
+      context: .
+      dockerfile: ./src/match-info-consumer/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_DEFAULT_HOST}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RIOT_API_KEY=${RIOT_API_KEY}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    command: ["python", "main.py"]
+    networks:
+      - lol_composition_analyzer
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -18,21 +53,30 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    
-  find_puuid_service:
-    build:
-      context: .
-      dockerfile: ./src/find_puuid_service/Dockerfile
-    container_name: find_puuid_service
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
+
+  mongodb:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
     environment:
-      - RABBITMQ_HOST=${RABBITMQ_DEFAULT_HOST}
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      - RIOT_API_KEY=${RIOT_API_KEY}
-    command: ["python", "main.py"]
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    networks:
+      - lol_composition_analyzer
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongoui
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${EXPRESS_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${EXPRESS_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
     networks:
       - lol_composition_analyzer
 
